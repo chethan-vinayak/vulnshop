@@ -1,0 +1,32 @@
+{
+  "ami-id": "ami-1234567890abcdef0",
+  "ami-launch-index": "0",
+  "ami-manifest-path": "(unknown)",
+  "hostname": "ip-10-0-1-15.ec2.internal",
+  "instance-action": "none",
+  "instance-id": "i-0abcdef1234567890",
+  "instance-life-cycle": "on-demand",
+  "instance-type": "t3.medium",
+  "local-hostname": "ip-10-0-1-15.ec2.internal",
+  "local-ipv4": "10.0.1.15",
+  "mac": "0a:1b:2c:3d:4e:5f",
+  "profile": "default-hvm",
+  "public-hostname": "ec2-203-0-113-25.compute-1.amazonaws.com",
+  "public-ipv4": "203.0.113.25",
+  "reservation-id": "r-0abcdef1234567890",
+  "security-groups": "launch-wizard-1",
+  "iam": {
+    "security-credentials": {
+      "vulnshop-role": {
+        "Code": "Success",
+        "LastUpdated": "2024-01-15T12:00:00Z",
+        "Type": "AWS-HMAC",
+        "AccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+        "SecretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "Token": "IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2IQoJb3JpZ2luX2I=",
+        "Expiration": "2024-01-16T12:00:00Z"
+      }
+    }
+  },
+  "user-data": "#!/bin/bash\necho 'VulnShop Instance'\nexport DB_PASSWORD=SuperSecretDBPass123!\nexport API_KEY=sk_live_abcdefghijklmnopqrstuvwxyz"
+}

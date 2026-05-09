@@ -1,0 +1,7 @@
+# WARNING: Intentionally vulnerable app. For local testing only. Never deploy.
+
+flask==2.3.3
+PyJWT==2.8.0
+PyYAML==5.1  # Vulnerable: CVE-2019-11324, CVE-2020-14343
+flask-sock==0.6.0  # WebSocket support for Phase 5
+pycryptodome==3.19.0  # Cryptographic vulnerabilities for Phase 6

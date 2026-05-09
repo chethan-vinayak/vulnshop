@@ -1,0 +1,151 @@
+# VulnShop Microservices Architecture
+# WARNING: Intentionally vulnerable. Local testing only. Never deploy.
+
+version: '3.8'
+
+services:
+  # API Gateway - Entry point for all requests
+  api-gateway:
+    build: 
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - PRODUCT_SERVICE_URL=http://product-service:5002
+      - ORDER_SERVICE_URL=http://order-service:5003
+      - VULNERABLE_MODE=true
+    networks:
+      - vulnshop-network
+    depends_on:
+      - auth-service
+      - product-service
+      - order-service
+
+  # Authentication Service - JWT, sessions, user management
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - JWT_SECRET=weak-jwt-secret-123
+      - DB_PATH=/data/auth.db
+      - VULNERABLE_AUTH=true
+    volumes:
+      - auth-data:/data
+    networks:
+      - vulnshop-network
+
+  # Product Service - Product catalog, inventory
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - DB_PATH=/data/products.db
+      - VULNERABLE_SQL=true
+    volumes:
+      - product-data:/data
+      - ./uploads:/uploads
+    networks:
+      - vulnshop-network
+
+  # Order Service - Order processing, checkout
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    environment:
+      - DB_PATH=/data/orders.db
+      - PAYMENT_GATEWAY_URL=http://payment-service:5004
+      - VULNERABLE_LOGIC=true
+    volumes:
+      - order-data:/data
+    networks:
+      - vulnshop-network
+    depends_on:
+      - payment-service
+
+  # Payment Service - Payment processing (intentionally vulnerable)
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    environment:
+      - STRIPE_KEY=sk_live_vulnerable_key
+      - VULNERABLE_PAYMENT=true
+    networks:
+      - vulnshop-network
+    # Intentionally vulnerable: exposed internal port without auth
+
+  # Vulnerable Admin Panel - Exposed for testing
+  admin-panel:
+    build:
+      context: ./services/admin-panel
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    environment:
+      - AUTH_BYPASS=true
+      - ALL_SERVICES_ACCESS=true
+    networks:
+      - vulnshop-network
+    # Intentionally vulnerable: no authentication, full access
+
+  # Internal Database - Exposed for SSRF testing
+  internal-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=vulnshop_internal
+    ports:
+      - "5432:5432"  # Exposed for SSRF testing
+    networks:
+      - vulnshop-network
+    volumes:
+      - internal-db-data:/var/lib/postgresql/data
+
+  # Redis - Cache with no auth (intentionally vulnerable)
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --protected-mode no  # No authentication
+    networks:
+      - vulnshop-network
+
+  # Metadata service - Simulates cloud metadata
+  metadata-service:
+    build:
+      context: ./services/metadata-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"  # Accessible internally
+    environment:
+      - AWS_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      - GCE_TOKEN=fake-gce-token
+    networks:
+      - vulnshop-network
+    # Simulates cloud metadata endpoint
+
+networks:
+  vulnshop-network:
+    driver: bridge
+    # Intentionally vulnerable: no network segmentation
+
+volumes:
+  auth-data:
+  product-data:
+  order-data:
+  internal-db-data:
