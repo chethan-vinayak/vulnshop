@@ -14,8 +14,13 @@ VulnShop is a deliberately vulnerable Python Flask e-commerce web application de
 ## 🚀 Quick Start
 
 ```bash
-# Reset database and start the app
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Reset database
 python database.py
+
+# 3. Start the app
 python app.py
 ```
 
